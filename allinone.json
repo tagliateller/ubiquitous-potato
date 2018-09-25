@@ -589,6 +589,32 @@
       }
     },
     {
+      "type" : "Microsoft.Compute/virtualMachines/extensions",
+      "name" : "[concat(resourceGroup().name,'/installcustomscript')]",
+      "apiVersion" : "[variables('apiVersion')]",
+      "location" : "[resourceGroup().location]",
+      "tags" : {
+        "displayName" : "VirtualMachineCustomScriptExtension"
+      },
+      "dependsOn" : [
+        "[concat('Microsoft.Compute/virtualMachines/', resourceGroup().name)]"
+      ],
+      "properties" : {
+        "publisher" : "Microsoft.Azure.Extensions",
+        "type" : "CustomScript",
+        "typeHandlerVersion" : "2.0",
+        "autoUpgradeMinorVersion" : true,
+        "settings" : {
+          "fileUris" : [
+            "[concat(variables('baseTemplateUrl'), 'allinone.sh')]"
+          ]
+        },
+        "protectedSettings" : {
+          "commandToExecute" : "[ concat('bash allinone.sh ', resourceGroup().name, ' ', resourceGroup().name, ' ',  parameters('adminUsername'), ' ', parameters('adminPassword'), ' ', reference(variables('publicIPAddressName')).dnsSettings.fqdn, ' ', '0', ' ', reference('onevmPublicIP').ipAddress, ' ', variables('sQuote'),  parameters('sshPrivateData'), variables('sQuote'),  ' ', variables('sQuote'), parameters('sshKeyData'), variables('sQuote'),' ',variables('registryStorageName'),' ',listKeys(resourceId('Microsoft.Storage/storageAccounts',variables('registryStorageName')),'2015-06-15').key1,' ',variables('location'),' ',variables('subscriptionid'),' ',variables('tenantid'),' ',parameters('aadclientid'),' ',parameters('aadclientsecret'),' ', variables('rhsmmode'),' ',parameters('metrics'),' ',parameters('logging'),' ',parameters('opslogging'))]"
+        }
+      }
+    },
+    {
       "type" : "Microsoft.Network/networkSecurityGroups",
       "name" : "[concat(resourceGroup().name, 'nsg')]",
       "tags" : {
